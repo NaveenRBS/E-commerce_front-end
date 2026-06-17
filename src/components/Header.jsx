@@ -1,12 +1,33 @@
 import './header.css' ;
 import { Link } from 'react-router';
-export function Header ({cart}){
-    
+import { useState } from 'react';
+
+export function Header ({cart, onSearch}){
     let totalCartQuantity = 0;
 
     cart.forEach((cartitem) =>{
         totalCartQuantity+= cartitem.quantity;
     });
+
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const handleInputChange = (e) => {
+        const v = e.target.value;
+        setSearchTerm(v);
+        if (!onSearch) return;
+        // live-update search results as user types
+        onSearch(v);
+    }
+
+    const handleButtonClick = () => {
+        if (onSearch) onSearch(searchTerm);
+    }
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && onSearch) {
+            onSearch(searchTerm);
+        }
+    }
 
     return(
             <div className="header">
@@ -17,9 +38,9 @@ export function Header ({cart}){
             </div>
 
             <div className="middle-section">
-                <input className="search-bar" type="text" placeholder="Search" />
+                <input className="search-bar" type="text" placeholder="Search" value={searchTerm} onChange={handleInputChange} onKeyDown={handleKeyDown} />
 
-                <button className="search-button">
+                <button className="search-button" onClick={handleButtonClick}>
                     <img className="search-icon" src="images/icons/search-icon.png" />
                 </button>
             </div>
